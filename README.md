@@ -1,4 +1,31 @@
-# Polymer App Toolbox - Starter Kit
+# Photowalk
+
+Notes:
+So the basis idea of the app is two connect local photographers on the one hand and on the other hand to create a map of interesting photo places.
+
+So regarding the first part:
+If somebody is going out to take pictures that person would be able to connect to others who are doing the same and partner up, because it is always more fun to do it in a group.
+
+Regarding the second:
+Imagine you are going to a new city and and to take photos but you don't really know where to go (except maybe the super touristic places). Or even in your own city there are many hidden places you have never heard of.
+The idea it to categorize and cataloguize those places with additional information like ratings, comments and pictures.
+(Ideally that would be done by the community.) So you would be able to comfortably search for them on your app.
+
+
+That's the basic idea. I am currently still brainstorming for additional features. One would include (photo-)workshops using augmented reality. Which I think is really promising, as it would kinda create it's own demand.
+
+I hope I was able to bring the point of the application across.
+I also created a small mock-up of the possible features. It is very simple but maybe it helps understanding.
+
+About the labels: my first idea was to categorize, as you probably want to meet people who do the same as you.
+
+But thinking a little more about it. It might be good to leave this out, at least for the beginning. For simplicity reasons, and also maybe people enjoy trying out new things which aren't their field.
+
+So showing those people who are currently walking around in your proximity and you are able to invite to take pictures together.
+You should be able to invite them, and if they accept it will show you their location (using GPS), or you can schedule a meeting point.
+
+
+## Polymer App Toolbox - Starter Kit
 
 [![Build Status](https://travis-ci.org/PolymerElements/polymer-starter-kit.svg?branch=master)](https://travis-ci.org/PolymerElements/polymer-starter-kit)
 
