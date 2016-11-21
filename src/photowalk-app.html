@@ -167,7 +167,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </app-toolbar>
         </app-header>
 
-
         <neon-animated-pages id="pages" selected="0">
           <google-map
             id="gMap"
@@ -262,7 +261,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_routePageChanged(routeData.page)'
       ],
 
-      pinDataChangedfunction:function(newData, oldData) {
+      pinDataChanged: function(newData, oldData) {
         // do something when the query returns values
         console.log('pin data changed 0_0', newData, oldData)
       },
@@ -312,7 +311,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var lng = e.detail.latLng.lng()
 
         var newMarker = document.createElement('google-map-marker')
-        newMarker.onTap = _onPinClick
+
 
         newMarker.latitude= lat
         newMarker.longitude= lng
@@ -326,15 +325,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           longitude: lng
         }
 
-        this.openAddLocationDialog()
-        // this.saveLocToFirebase(newLocData)
-        // this.$.gMap.appendChild(newMarker)
+//        this.openAddLocationDialog()
+        this.saveLocToFirebase(newLocData)
+        this.$.gMap.appendChild(newMarker)
       },
       saveLocToFirebase: function(newLocData) {
         console.log(newLocData)
         this.$.locationsDoc.path=null
         this.$.locationsDoc.data=newLocData
-        //this.$.locationsDoc.save('/locations', newLocData.id).then(function() {console.log('saved')} )
+        // this.$.locationsDoc.save('/locations', newLocData.id).then(function() {console.log('saved')} )
       },
       toggleLoginModal: function() {
         this.$.loginModal.toggle()
