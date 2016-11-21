@@ -35,7 +35,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animations.html">
 
-<link rel="import" href="pw-map.html">
 <link rel="import" href="squares-page.html">
 
 <dom-module id="photowalk-app">
@@ -120,7 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-name="photowalkApp"
       path="/locations"
       data="{{pins}}">
-    </firebase-query>
+  </firebase-query>
 
     <firebase-document
       id="locationsDoc"
@@ -155,6 +154,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
             <div main-title>Photowalk</div>
+
 
             <div hidden$="[[user]]">
               <paper-icon-button on-tap="toggleLoginModal" icon="account-circle"></paper-icon-button>
@@ -262,7 +262,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_routePageChanged(routeData.page)'
       ],
 
-      pinDataChangedfunction (newData, oldData) {
+      pinDataChangedfunction:function(newData, oldData) {
         // do something when the query returns values
         console.log('pin data changed 0_0', newData, oldData)
       },
