@@ -18,24 +18,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/google-map/google-map-elements.html">
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="my-icons.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/social-media-icons/social-media-icons.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="my-icons.html">
 
 <link rel="import" href="squares-page.html">
+<link rel="import" href="users-page.html">
+
 
 <dom-module id="photowalk-app">
   <template>
@@ -66,7 +74,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
-      app-drawer app-toolbar {background-color: var(--app-primary-color);}
+      app-drawer app-toolbar {
+        background-color: var(--app-primary-color);
+      }
 
       .drawer-list {
         margin: 0 20px;
@@ -95,7 +105,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       google-map::shadow #map .gm-style {
-        background-color: #08304b;
+        background-color: var(--app-secondary-color);
+      }
+
+      paper-menu {
+        background: transparent;
+        color: var(--app-primary-color);
+      }
+
+      paper-fab {
+        position: fixed;
+        right: 45px;
+        bottom: 45px;
       }
     </style>
 
@@ -119,7 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-name="photowalkApp"
       path="/locations"
       data="{{pins}}">
-  </firebase-query>
+    </firebase-query>
 
     <firebase-document
       id="locationsDoc"
@@ -138,32 +159,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
       <app-drawer id="drawer">
-        <app-toolbar>Menu</app-toolbar>
 
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+        <paper-menu selected="0">
+          <paper-icon-item>
+            <iron-icon icon="maps:place" item-icon></iron-icon>
+            Locations
+          </paper-icon-item>
+          <paper-icon-item>
+            <iron-icon icon="social:people" item-icon></iron-icon>
+            Users
+          </paper-icon-item>
+        </paper-menu>
+
+        <!-- <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="view1" href="/view1">View One</a>
           <a name="view2" href="/view2">View Two</a>
           <a name="view3" href="/view3">View Three</a>
-        </iron-selector>
+        </iron-selector> -->
       </app-drawer>
 
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
-
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
             <div main-title>Photowalk</div>
-
-
             <div hidden$="[[user]]">
               <paper-icon-button on-tap="toggleLoginModal" icon="account-circle"></paper-icon-button>
             </div>
             <div hidden$="[[!user]]">
               <paper-icon-button on-tap="toggleLoginModal" src="[[user.photoURL]]" style="border-radius: 100%;"></paper-icon-button>
-              <!-- <img src="[[user.photoURL]]" width="25px" style="border-radius: 100%;" alt=""> -->
             </div>
-
           </app-toolbar>
         </app-header>
 
@@ -174,7 +200,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             on-google-map-click="clickMapHandler"
             latitude="37.77493"
             longitude="-122.41942">
-
             <!-- ToDo: might want to make this an iron-list -->
             <template is="dom-repeat" items="{{pins}}" as="pin">
               <google-map-marker
@@ -186,6 +211,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </google-map>
 
           <squares-page on-click="_onSquaresClick"></squares-page>
+
+          <users-page></users-page>
         </neon-animated-pages>
 
         <!-- <iron-pages
@@ -193,8 +220,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <my-view1 name="view1">
-          </my-view1>
           <my-view2 name="view2"></my-view2>
           <my-view3 name="view3"></my-view3>
           <my-view404 name="view404"></my-view404>
@@ -227,17 +252,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </paper-dialog>
 
-    <paper-dialog id="addLocationDialog"
+    <paper-fab icon="add"></paper-fab>
+
+    <paper-toast id="toast" text="Location Saved!"></paper-toast>
+
+    <paper-dialog
+      id="addLocationDialog"
       entry-animation="scale-up-animation"
       exit-animation="fade-out-animation">
       <h2>Add location</h2>
-      <form is="iron-form" id="form" method="post" action="">
+      <form is="iron-form" id="AddLocationForm" method="post" action="">
+        <input type="number" name="latitude" readonly>
+        <input type="number" name="longitude" readonly>
         <paper-input label="Location Title"></paper-input>
+        <paper-button raised onclick="saveLocToFirebase">Submit</paper-button>
       </form>
       <paper-button on-tap="closeAddLocationDialog">Cancel</paper-button>
     </paper-dialog>
-
-    <paper-toast id="toast" text="Location Saved!"></paper-toast>
 
   </template>
   <script>
@@ -312,11 +343,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         var newMarker = document.createElement('google-map-marker')
 
-
-        newMarker.latitude= lat
-        newMarker.longitude= lng
-
-        console.log(e)
+        newMarker.latitude = lat
+        newMarker.longitude = lng
 
         var newLocData = {
           id: lat.toString().replace('.', '') + lng.toString().replace('.', ''),
@@ -325,36 +353,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           longitude: lng
         }
 
-//        this.openAddLocationDialog()
-        this.saveLocToFirebase(newLocData)
-        this.$.gMap.appendChild(newMarker)
-      },
-      saveLocToFirebase: function(newLocData) {
-        console.log(newLocData)
-        this.$.locationsDoc.path=null
-        this.$.locationsDoc.data=newLocData
-        // this.$.locationsDoc.save('/locations', newLocData.id).then(function() {console.log('saved')} )
-      },
-      toggleLoginModal: function() {
-        this.$.loginModal.toggle()
-      },
-      openAddLocationDialog: function() {
         this.$.addLocationDialog.open()
       },
       closeAddLocationDialog: function() {
         this.$.addLocationDialog.close()
       },
-      markerClickHandler: function() {
-        console.log('marker clicked')
+      saveLocToFirebase: function(newLocData) {
+        this.$.locationsDoc.path=null
+        this.$.locationsDoc.data=newLocData
+        this.$.locationsDoc.save('/locations', newLocData.id)
+        .then(function() {
+          this.$.gMap.appendChild(newMarker)
+          console.log('saved')
+        })
+      },
+      toggleLoginModal: function() {
+        this.$.loginModal.toggle()
       },
       showError: function(e) {
         this.error = e.detail;
       },
       signInWithGoogle: function() {
+        var self = this
         this.error = null;
-        console.log(this.$.auth)
         this.$.auth.signInWithPopup().then(function(user) {
           console.log(user)
+          self.$.gMap.resize()
+          self.toggleLoginModal()
         });
       },
       signOut: function() {
@@ -362,10 +387,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.auth.signOut();
       },
       handleGoogleLoginError: function(error) {
-        console.log(error)
+        if (err) throw err
       },
       _onPinClick: function(event) {
-        console.log(event)
         this.$.pages.selected = 1;
       },
       _onSquaresClick: function(event) {
