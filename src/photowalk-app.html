@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
@@ -20,42 +21,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
 <link rel="import" href="../bower_components/iron-icons/maps-icons.html">
 <link rel="import" href="../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
-<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/google-map/google-map-elements.html">
-<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../bower_components/social-media-icons/social-media-icons.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animations.html">
 <link rel="import" href="my-icons.html">
-
 <link rel="import" href="squares-page.html">
 <link rel="import" href="users-page.html">
-
+<link rel="import" href="pw-map.html">
 
 <dom-module id="photowalk-app">
   <template>
     <style>
-      neon-animated-pages {
-        height: 100%;
-      }
-
       :host {
         --app-primary-color: #1791ab;
         --app-secondary-color: #08304b;
         display: block;
+      }
+
+    [hidden] {
+        display: none !important;
       }
 
       app-header {
@@ -75,23 +78,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       app-drawer app-toolbar {
-        background-color: var(--app-primary-color);
+        background-color: #117d94;
       }
 
-      .drawer-list {
-        margin: 0 20px;
+     app-drawer app-toolbar paper-dropdown-menu {
+        --paper-input-container-label: {
+          color: #fff;
+        };
+
       }
 
       .drawer-list a {
         display: block;
-        padding: 0 16px;
         text-decoration: none;
         color: var(--app-primary-color);
         line-height: 40px;
+
       }
 
-      .drawer-list a.iron-selected {
-        font-weight: bold;
+      neon-animated-pages {
+        height: 100%;
       }
 
       paper-toast {
@@ -99,13 +105,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --paper-toast-background-color: #fff;
       }
 
-      #loginModal paper-button {
+      #gSignInButton {
         background: #d34836;
         color: #fff;
-      }
-
-      google-map::shadow #map .gm-style {
-        background-color: var(--app-secondary-color);
       }
 
       paper-menu {
@@ -120,38 +122,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    <firebase-app
-      name="photowalkApp"
+    <firebase-app name="photowalkApp"
       api-key="AIzaSyChfnUOuiWMSQwpcyRwh4pru5u_hcKmWm8"
       auth-domain="photowalk-85cde.firebaseapp.com"
       database-url="https://photowalk-85cde.firebaseio.com">
     </firebase-app>
 
-    <firebase-auth
-      id="auth"
+    <firebase-auth id="auth"
       app-name="photowalkApp"
       user="{{user}}"
       provider="google"
       on-error="handleGoogleLoginError">
     </firebase-auth>
 
-    <firebase-query
-      id="pinQuery"
+    <firebase-query id="pinQuery"
       app-name="photowalkApp"
       path="/locations"
       data="{{pins}}">
     </firebase-query>
 
-    <firebase-document
-      id="locationsDoc"
-      app-name="photowalkApp"
-      path="/locations"
-      data="{{locations}}">
+    <firebase-document id="locationsDoc"
+        app-name="photowalkApp"
+        path="/locations"
+        data="{{locations}}">
     </firebase-document>
 
     <app-location route="{{route}}"></app-location>
-    <app-route
-        route="{{route}}"
+    <app-route route="{{route}}"
         pattern="/:page"
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
@@ -159,23 +156,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
       <app-drawer id="drawer">
+        <app-toolbar>
+            <paper-button hidden$="[[user]]" id="gSignInButton" raised on-tap="signInWithGoogle">
+              Sign In
+            </paper-button>
 
-        <paper-menu selected="0">
-          <paper-icon-item>
-            <iron-icon icon="maps:place" item-icon></iron-icon>
-            Locations
-          </paper-icon-item>
-          <paper-icon-item>
-            <iron-icon icon="social:people" item-icon></iron-icon>
-            Users
-          </paper-icon-item>
+            <paper-dropdown-menu hidden$="[[!user]]" label="[[user.displayName]]">
+                <paper-listbox class="dropdown-content">
+                  <paper-item on-tap="signOut">Sign Out</paper-item>
+                </paper-listbox>
+            </paper-dropdown-menu>
+        </app-toolbar>
+
+        <div class="error" hidden$="[[!authenticationError]]">[[authenticationError.code]]: [[authenticationError.message]]</div>
+        <div hidden$="[[!user]]">
+            <img src="[[user.photoURL]]" width="100%" alt="[[user.displayName]]'s profile image">
+        </div>
+
+        <paper-menu selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+            <a name="one" href="/one">
+              <paper-icon-item>
+                <iron-icon icon="maps:place" item-icon></iron-icon>
+                Locations
+              </paper-icon-item>
+            </a>
+            <a name="two" href="/two">
+              <paper-icon-item key='view2'>
+                <iron-icon icon="social:people" item-icon></iron-icon>
+                Users
+              </paper-icon-item>
+            </a>
+            <a name="three" href="/three">
+              <paper-icon-item key='view2'>
+                <iron-icon icon="image:camera-alt" item-icon></iron-icon>
+                My pics
+              </paper-icon-item>
+            </a>
         </paper-menu>
-
-        <!-- <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1">View One</a>
-          <a name="view2" href="/view2">View Two</a>
-          <a name="view3" href="/view3">View Three</a>
-        </iron-selector> -->
       </app-drawer>
 
       <!-- Main content -->
@@ -184,75 +201,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
             <div main-title>Photowalk</div>
-            <div hidden$="[[user]]">
-              <paper-icon-button on-tap="toggleLoginModal" icon="account-circle"></paper-icon-button>
-            </div>
-            <div hidden$="[[!user]]">
-              <paper-icon-button on-tap="toggleLoginModal" src="[[user.photoURL]]" style="border-radius: 100%;"></paper-icon-button>
-            </div>
           </app-toolbar>
         </app-header>
 
-        <neon-animated-pages id="pages" selected="0">
-          <google-map
-            id="gMap"
-            click-events
-            on-google-map-click="clickMapHandler"
-            latitude="37.77493"
-            longitude="-122.41942">
-            <!-- ToDo: might want to make this an iron-list -->
-            <template is="dom-repeat" items="{{pins}}" as="pin">
-              <google-map-marker
-              click-events
-              on-google-map-marker-click="_onPinClick"
-              latitude="[[pin.latitude]]"
-              longitude="[[pin.longitude]]" title="[[pin.title]]"></google-map-marker>
-            </template>
-          </google-map>
-
+        <!-- <neon-animated-pages id="pages" selected="0">
           <squares-page on-click="_onSquaresClick"></squares-page>
-
           <users-page></users-page>
-        </neon-animated-pages>
+        </neon-animated-pages> -->
 
-        <!-- <iron-pages
-            selected="[[page]]"
-            attr-for-selected="name"
-            fallback-selection="view404"
-            role="main">
-          <my-view2 name="view2"></my-view2>
-          <my-view3 name="view3"></my-view3>
-          <my-view404 name="view404"></my-view404>
-        </iron-pages> -->
+        <neon-animated-pages selected="[[page]]"
+                             fallback-selection="404"
+                             entry-animation="fade-in-animation"
+                             exit-animation="fade-out-animation"
+                             attr-for-selected="data-name">
+          <neon-animatable data-name="one">
+            <template is="dom-if" if="[[currentCoords]]">
+              <pw-map coords="[[currentCoords]]" pins="[[pins]]"></pw-map>
+            </template>
+          </neon-animatable>
+          <neon-animatable data-name="two">orange are great</neon-animatable>
+          <neon-animatable data-name="three">bananas are better</neon-animatable>
+          <neon-animatable data-name="404">Page not found...</neon-animatable>
+        </neon-animated-pages>
       </app-header-layout>
     </app-drawer-layout>
-
-    <paper-dialog id="loginModal"
-      entry-animation="scale-up-animation"
-      exit-animation="fade-out-animation">
-      <h2>Sign in with Google</h2>
-      <div class="error" hidden$="[[!error]]">[[error.code]]: [[error.message]]</div>
-      <div hidden$="[[user]]">
-        <p>
-          <paper-button raised on-tap="signInWithGoogle">
-            Sign In
-          </paper-button>
-        </p>
-      </div>
-      <div hidden$="[[!user]]">
-        <img src="[[user.photoURL]]" width="100px" alt="">
-        <table>
-          <tr><th>uid</th> <td>[[user.uid]]</td></tr>
-          <tr><th>displayName</th> <td>[[user.displayName]]</td></tr>
-          <tr><th>email</th> <td>[[user.email]]</td></tr>
-          <tr><th>emailVerified</th> <td>[[user.emailVerified]]</td></tr>
-        </table>
-
-        <button on-tap="signOut">Sign Out</button>
-      </div>
-    </paper-dialog>
-
-    <paper-fab icon="add"></paper-fab>
 
     <paper-toast id="toast" text="Location Saved!"></paper-toast>
 
@@ -274,12 +246,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     Polymer({
       is: 'photowalk-app',
-
       properties: {
         page: {
           type: String,
-          reflectToAttribute: true,
-          observer: '_pageChanged'
+          value: 'one',
+          //reflectToAttribute: true,
+          //observer: '_pageChanged'
         },
         locations: Object,
         pins: {
@@ -294,11 +266,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       pinDataChanged: function(newData, oldData) {
         // do something when the query returns values
-        console.log('pin data changed 0_0', newData, oldData)
+        // console.log('pin data changed 0_0', newData, oldData)
       },
 
       _routePageChanged: function(page) {
-        this.page = page || 'view1';
+        this.page = page || 'one';
       },
 
       _pageChanged: function(page) {
@@ -312,20 +284,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       ready: function() {
-        //for login error
-        this.error = null;
+        this.authenticationError = null;
 
         if (navigator.geolocation) {
           var self = this
           navigator.geolocation.getCurrentPosition(
               function(position) {
-                var lat = position.coords.latitude
-                var lng = position.coords.longitude
-
-                self.$.gMap.latitude = lat
-                self.$.gMap.longitude = lng
+                self.currentCoords = position.coords
               },
               function(error){
+                self.currentCoords = {
+                  latitude: 43.0679612,
+                  longitude:-87.8844213
+                }
+
                 console.log('Geolocation Error: ', error, '\n', 'Message: ', error.message)
               }
           );
@@ -334,7 +306,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           alert('Your device does not support geolocation')
         }
 
-        this.$.gMap.styles = [{"featureType":"all","elementType":"all","stylers":[{"visibility":"on"}]},{"featureType":"all","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"all","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"all","elementType":"labels.text","stylers":[{"visibility":"off"},{"color":"#ff0000"}]},{"featureType":"all","elementType":"labels.text.fill","stylers":[{"visibility":"off"},{"color":"#ffffff"},{"gamma":"0.62"},{"lightness":"-73"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13},{"visibility":"off"}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#144b53"},{"lightness":14},{"weight":1.4}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#08304b"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#0c4152"},{"lightness":5}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#0b434f"},{"lightness":25},{"visibility":"on"}]},{"featureType":"road.highway","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"lightness":"-8"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"simplified"},{"gamma":"0.00"},{"lightness":"-33"},{"saturation":"-53"},{"weight":"0.42"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#0b3d51"},{"lightness":16}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"transit","elementType":"all","stylers":[{"color":"#146474"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#021019"}]}]
+//        this.$.gMap.styles = [{"featureType":"all","elementType":"all","stylers":[{"visibility":"on"}]},{"featureType":"all","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"all","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"all","elementType":"labels.text","stylers":[{"visibility":"off"},{"color":"#ff0000"}]},{"featureType":"all","elementType":"labels.text.fill","stylers":[{"visibility":"off"},{"color":"#ffffff"},{"gamma":"0.62"},{"lightness":"-73"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13},{"visibility":"off"}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#144b53"},{"lightness":14},{"weight":1.4}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#08304b"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#0c4152"},{"lightness":5}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#0b434f"},{"lightness":25},{"visibility":"on"}]},{"featureType":"road.highway","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"lightness":"-8"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"simplified"},{"gamma":"0.00"},{"lightness":"-33"},{"saturation":"-53"},{"weight":"0.42"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#0b3d51"},{"lightness":16}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"transit","elementType":"all","stylers":[{"color":"#146474"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#021019"}]}]
 
       },
       clickMapHandler: function(e) {
@@ -364,26 +336,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.locationsDoc.save('/locations', newLocData.id)
         .then(function() {
           this.$.gMap.appendChild(newMarker)
-          console.log('saved')
+          console.log('new location saved')
         })
       },
-      toggleLoginModal: function() {
-        this.$.loginModal.toggle()
-      },
       showError: function(e) {
-        this.error = e.detail;
+        this.authenticationError = e.detail;
       },
       signInWithGoogle: function() {
         var self = this
-        this.error = null;
+        this.authenticationError = null;
         this.$.auth.signInWithPopup().then(function(user) {
-          console.log(user)
-          self.$.gMap.resize()
-          self.toggleLoginModal()
+          console.log('user logged in: ', user)
         });
       },
       signOut: function() {
-        this.error = null;
+        this.authenticationError = null;
         this.$.auth.signOut();
       },
       handleGoogleLoginError: function(error) {
@@ -395,7 +362,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _onSquaresClick: function(event) {
         this.$.pages.selected = 0;
       },
-
     });
   </script>
 </dom-module>

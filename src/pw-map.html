@@ -1,0 +1,81 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/google-map/google-map-elements.html">
+
+<dom-module id="pw-map">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        height: 100%;
+      }
+      google-map {
+        width: 100%;
+        height: 100%;
+      }
+
+      google-map::shadow #map .gm-style {
+        background-color: var(--app-secondary-color);
+      }
+    </style>
+
+    <google-map
+      id="gMap"
+      click-events
+      disable-default-ui
+      apiKey="AIzaSyARXbtslpE-BJQnarNlAaD6zdIVlJRJ5h4"
+      on-google-map-click="_clickMapHandler"
+      latitude="[[coords.latitude]]"
+      longitude="[[coords.longitude]]">
+
+      <!-- ToDo: might want to make this an iron-list -->
+      <template is="dom-repeat" items="{{pins}}" as="pin">
+        <google-map-marker
+        click-events
+        on-google-map-marker-click="_onPinClick"
+        latitude="[[pin.latitude]]"
+        longitude="[[pin.longitude]]" title="[[pin.title]]"></google-map-marker>
+      </template>
+    </google-map>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'pw-map',
+      properties: {
+        coords: Object,
+        pins: Array
+      },
+      ready: function() {
+        console.log(this.pins)
+        this._renderMap()
+      },
+      _renderMap: function() {
+          this.$.gMap.styles = [{"featureType":"all","elementType":"all","stylers":[{"visibility":"on"}]},{"featureType":"all","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"all","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"all","elementType":"labels.text","stylers":[{"visibility":"off"},{"color":"#ff0000"}]},{"featureType":"all","elementType":"labels.text.fill","stylers":[{"visibility":"off"},{"color":"#ffffff"},{"gamma":"0.62"},{"lightness":"-73"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13},{"visibility":"off"}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#144b53"},{"lightness":14},{"weight":1.4}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#08304b"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#0c4152"},{"lightness":5}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#0b434f"},{"lightness":25},{"visibility":"on"}]},{"featureType":"road.highway","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"lightness":"-8"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"simplified"},{"gamma":"0.00"},{"lightness":"-33"},{"saturation":"-53"},{"weight":"0.42"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#0b3d51"},{"lightness":16}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"transit","elementType":"all","stylers":[{"color":"#146474"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#021019"}]}]
+
+
+      },
+      _clickMapHandler: function(e) {
+        var lat = e.detail.latLng.lat()
+        var lng = e.detail.latLng.lng()
+
+        var newMarker = document.createElement('google-map-marker')
+
+        newMarker.latitude = lat
+        newMarker.longitude = lng
+
+        var newLocData = {
+          id: lat.toString().replace('.', '') + lng.toString().replace('.', ''),
+          title: 'Title (' + lat + '-' + lng + ')',
+          latitude: lat,
+          longitude: lng
+        }
+
+        this.$.addLocationDialog.open()
+      },
+      closeAddLocationDialog: function() {
+        this.$.addLocationDialog.close()
+      },
+    });
+  </script>
+</dom-module>
