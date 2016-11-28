@@ -38,11 +38,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/google-map/google-map-elements.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animations.html">
 <link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../bower_components/social-media-icons/social-media-icons.html">
-<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
-<link rel="import" href="../bower_components/neon-animation/neon-animations.html">
 <link rel="import" href="my-icons.html">
 <link rel="import" href="squares-page.html">
 <link rel="import" href="users-page.html">
@@ -98,11 +98,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       neon-animated-pages {
         height: 100%;
-      }
-
-      paper-toast {
-        color: var(--app-primary-color);
-        --paper-toast-background-color: #fff;
       }
 
       #gSignInButton {
@@ -174,7 +169,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
 
         <paper-menu selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-            <a name="one" href="/one">
+            <a name="one" href="/map">
               <paper-icon-item>
                 <iron-icon icon="maps:place" item-icon></iron-icon>
                 Locations
@@ -204,17 +199,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </app-toolbar>
         </app-header>
 
-        <!-- <neon-animated-pages id="pages" selected="0">
-          <squares-page on-click="_onSquaresClick"></squares-page>
-          <users-page></users-page>
-        </neon-animated-pages> -->
-
         <neon-animated-pages selected="[[page]]"
                              fallback-selection="404"
                              entry-animation="fade-in-animation"
                              exit-animation="fade-out-animation"
                              attr-for-selected="data-name">
-          <neon-animatable data-name="one">
+          <neon-animatable data-name="map">
             <template is="dom-if" if="[[currentCoords]]">
               <pw-map coords="[[currentCoords]]" pins="[[pins]]"></pw-map>
             </template>
@@ -225,23 +215,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </neon-animated-pages>
       </app-header-layout>
     </app-drawer-layout>
-
-    <paper-toast id="toast" text="Location Saved!"></paper-toast>
-
-    <paper-dialog
-      id="addLocationDialog"
-      entry-animation="scale-up-animation"
-      exit-animation="fade-out-animation">
-      <h2>Add location</h2>
-      <form is="iron-form" id="AddLocationForm" method="post" action="">
-        <input type="number" name="latitude" readonly>
-        <input type="number" name="longitude" readonly>
-        <paper-input label="Location Title"></paper-input>
-        <paper-button raised onclick="saveLocToFirebase">Submit</paper-button>
-      </form>
-      <paper-button on-tap="closeAddLocationDialog">Cancel</paper-button>
-    </paper-dialog>
-
   </template>
   <script>
     Polymer({
@@ -249,7 +222,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
         page: {
           type: String,
-          value: 'one',
+          value: 'map',
           //reflectToAttribute: true,
           //observer: '_pageChanged'
         },
@@ -268,21 +241,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // do something when the query returns values
         // console.log('pin data changed 0_0', newData, oldData)
       },
-
       _routePageChanged: function(page) {
-        this.page = page || 'one';
+        this.page = page || 'map';
       },
-
       _pageChanged: function(page) {
         // Load page import on demand. Show 404 page if fails
         var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
         this.importHref(resolvedPageUrl, null, this._showPage404, true);
       },
-
       _showPage404: function() {
         this.page = 'view404';
       },
-
       ready: function() {
         this.authenticationError = null;
 
@@ -305,38 +274,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         else {
           alert('Your device does not support geolocation')
         }
-
-//        this.$.gMap.styles = [{"featureType":"all","elementType":"all","stylers":[{"visibility":"on"}]},{"featureType":"all","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"all","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"all","elementType":"labels.text","stylers":[{"visibility":"off"},{"color":"#ff0000"}]},{"featureType":"all","elementType":"labels.text.fill","stylers":[{"visibility":"off"},{"color":"#ffffff"},{"gamma":"0.62"},{"lightness":"-73"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13},{"visibility":"off"}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#144b53"},{"lightness":14},{"weight":1.4}]},{"featureType":"landscape","elementType":"all","stylers":[{"color":"#08304b"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#0c4152"},{"lightness":5}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#0b434f"},{"lightness":25},{"visibility":"on"}]},{"featureType":"road.highway","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"labels.text.stroke","stylers":[{"lightness":"-8"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"simplified"},{"gamma":"0.00"},{"lightness":"-33"},{"saturation":"-53"},{"weight":"0.42"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#0b3d51"},{"lightness":16}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"transit","elementType":"all","stylers":[{"color":"#146474"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#021019"}]}]
-
-      },
-      clickMapHandler: function(e) {
-        var lat = e.detail.latLng.lat()
-        var lng = e.detail.latLng.lng()
-
-        var newMarker = document.createElement('google-map-marker')
-
-        newMarker.latitude = lat
-        newMarker.longitude = lng
-
-        var newLocData = {
-          id: lat.toString().replace('.', '') + lng.toString().replace('.', ''),
-          title: 'Title (' + lat + '-' + lng + ')',
-          latitude: lat,
-          longitude: lng
-        }
-
-        this.$.addLocationDialog.open()
-      },
-      closeAddLocationDialog: function() {
-        this.$.addLocationDialog.close()
       },
       saveLocToFirebase: function(newLocData) {
+        console.log('saving...', newLocData)
         this.$.locationsDoc.path=null
         this.$.locationsDoc.data=newLocData
         this.$.locationsDoc.save('/locations', newLocData.id)
         .then(function() {
-          this.$.gMap.appendChild(newMarker)
-          console.log('new location saved')
+            console.log('new location saved!')
         })
       },
       showError: function(e) {
@@ -355,13 +300,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       handleGoogleLoginError: function(error) {
         if (err) throw err
-      },
-      _onPinClick: function(event) {
-        this.$.pages.selected = 1;
-      },
-      _onSquaresClick: function(event) {
-        this.$.pages.selected = 0;
-      },
+      }
     });
   </script>
 </dom-module>
